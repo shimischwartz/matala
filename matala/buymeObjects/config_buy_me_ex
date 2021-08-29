@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<buy_me_website>
+  <browser_type>chrome</browser_type>
+  <url>https://buyme.co.il</url>
+  <excepted_title>title_to_insert</excepted_title>
+  <first_name>Aviel</first_name>
+  <mail>aviel@gmail.com</mail>
+  <password>aviel@gmail.com</password>
+  <password_confirm>aviel@gmail.com</password_confirm>
+</buy_me_website>
