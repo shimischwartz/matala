@@ -37,7 +37,7 @@ class BuymeTests(unittest.TestCase):
             config.add_child(key, INPUT[key])
         config.write_to_file("config_buy_me_ex")
 
-    def test_subsection(self):
+    def test_subscription(self):
         c = BuyMeObjects(self.tree.find("browser_type").text)
         c.set_first_name(self.tree.find("first_name").text)
         c.set_mail_element(self.tree.find("email").text)
