@@ -3,11 +3,27 @@ import unittest
 from random import random, randint
 
 from selenium import webdriver
-from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver import ActionChains
 
+# from msedge.selenium_tools import Edge, EdgeOptions
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+
+# options = EdgeOptions()
+# options.use_chromium = True
+#options.add_argument("-inprivate")
+# options.binary_location = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+# options.add_extension(r"Path_to_your_extension_here...\extension_name.crx") # Modify the path here...
+# capabilities = DesiredCapabilities.EDGE
+#
+# driver = Edge(executable_path = r"Path_to_the_Edge_web_driver_here..\msedgedriver.exe", options = options,desired_capabilities=capabilities) # Modify the path here...
+
+# driver.get("http://Your_website_address_here...") # Modify the URL here...
+
+# Perform some automation here...
+
+# driver.quit
 
 class BuyMeObjects:
 
@@ -33,7 +49,7 @@ class BuyMeObjects:
         if self.browser_type == "chrome":
             return webdriver.Chrome(options=self.options)
         elif self.browser_type == "edge":
-            return webdriver.edge
+            return webdriver.Edge()
 
     def open_page(self):
         self.driver.get("https://buyme.co.il")
@@ -110,7 +126,7 @@ class BuyMeObjects:
     def set_subscribe_element(self):
         self.elements_dict["subscribe"].click()
 
-    def check_subscription(self, firs_name, email_address):
+    def check_subscription(self):
         try:
             self.elements_dict["my_account"] = self.driver.find_element_by_css_selector("li[id='ember1530']")
             self.actions.move_to_element(self.elements_dict["my_account"]).perform()
@@ -118,12 +134,19 @@ class BuyMeObjects:
                 self.driver.find_element_by_css_selector("a[id='ember1575']")
             self.elements_dict["account_details"].click()
             time.sleep(10)
-            print(self.driver.current_url)
             self.driver.implicitly_wait(10)
-            print(self.driver.find_element_by_xpath("//*[@id='ember1711']").get_property("value"))
-            print(self.driver.find_element_by_xpath("//*[@id='ember1716']").get_property("value"))
+            return True
         except():
-            return "didn't subscribe"
+            return False
+
+    def get_subscribed_first_name(self):
+        return self.driver.find_element_by_xpath("//*[@id='ember1711']").get_property("value")
+
+    def get_subscribed_email_address(self):
+        return self.driver.find_element_by_xpath("//*[@id='ember1716']").get_property("value")
+
+    def get_current_url(self):
+        return self.driver.current_url
 
     def close_page(self):
         self.driver.close()
