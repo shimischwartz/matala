@@ -35,13 +35,13 @@ class TodoTests:
         todo_list = self.driver.find_elements_by_xpath("/html/body/ng-view/section/section/ul/li")
         for i in range(len(todo_list)):
             if todo_list[i].text == task_name:
-                time.sleep(5)
+                time.sleep(1)
                 return i
-        time.sleep(5)
+        time.sleep(1)
         return -1
 
     def edit_a_task(self, old_task_name, new_task_name):
-        time.sleep(5)
+        time.sleep(1)
         todo_list = self.driver.find_elements_by_xpath("/html/body/ng-view/section/section/ul/li")
         edit_list = self.driver.find_elements_by_class_name("edit")
         check_list = self.driver.find_elements_by_class_name("toggle")
@@ -53,7 +53,7 @@ class TodoTests:
         if check_list[i].is_selected():
             check_list[i].click()
 
-        time.sleep(5)
+        time.sleep(1)
 
     def check_edit_a_task(self, old_task_name, new_task_name):
         self.set_driver()
@@ -81,7 +81,7 @@ class TodoTests:
         self.set_driver()
         self.add_new_task(task_name)
         before = self.find_a_task(task_name)
-        time.sleep(4)
+        time.sleep(1)
         self.delete_a_task(task_name)
         to_return = (self.find_a_task(task_name) == -1) and (before >= 0)
         self.driver.close()
@@ -122,6 +122,7 @@ class TodoTests:
         self.mark_completed_task_as_active(task_name)
         after_unmark = self.is_marked(index)
         to_return = (not before_mark) and after_mark and (not after_unmark)
+        time.sleep(2)
         self.driver.close()
         return to_return
 
@@ -148,33 +149,61 @@ class TodoTests:
     def check_view_all(self, task_for_uncompleted, task_for_completed):
         self.set_driver()
         self.add_new_task(task_for_uncompleted)
+        time.sleep(1)
         self.add_new_task(task_for_completed)
+        time.sleep(1)
+        self.mark_task_as_completed(task_for_completed)
+        time.sleep(1)
         self.switch_to_view_active()
+        time.sleep(2)
         self.switch_to_view_all()
-        to_return = self.find_a_task(task_for_uncompleted) <= 0 and \
-               self.find_a_task(task_for_completed) <= 0
+        time.sleep(2)
+        index1 = self.find_a_task(task_for_uncompleted)
+        index2 = self.find_a_task(task_for_completed)
+        to_return = index1 >= 0 and index2 >= 0 and not self.is_marked(index1) and self.is_marked(index2)
+        time.sleep(1)
         self.driver.close()
         return to_return
 
     def check_view_active(self, task_for_uncompleted, task_for_completed):
         self.set_driver()
         self.add_new_task(task_for_uncompleted)
+        time.sleep(1)
         self.add_new_task(task_for_completed)
+        time.sleep(1)
+        self.mark_task_as_completed(task_for_completed)
+        time.sleep(1)
         self.switch_to_view_active()
-        to_return = self.find_a_task(task_for_uncompleted) <= 0 and \
-                    self.find_a_task(task_for_completed) == -1
+        time.sleep(1)
+        index = self.find_a_task(task_for_uncompleted)
+        to_return = index <= 0 and not self.is_marked(index) and self.find_a_task(task_for_completed) == -1
         self.driver.close()
         return to_return
 
+    def check_view_completed(self, task_for_uncompleted, task_for_completed):
+        self.set_driver()
+        self.add_new_task(task_for_uncompleted)
+        time.sleep(1)
+        self.add_new_task(task_for_completed)
+        time.sleep(1)
+        self.mark_task_as_completed(task_for_completed)
+        time.sleep(1)
+        self.switch_to_view_completed()
+        time.sleep(2)
+        index = self.find_a_task(task_for_completed)
+        to_return = self.find_a_task(task_for_uncompleted) == -1 and \
+                    index >= 0 and self.is_marked(index)
+        self.driver.close()
+        return to_return
 
     def switch_to_view_all(self):
-        self.driver.find_element_by_xpath("/html/body/ng-view/section/footer/ul/li[1]")[1].click()
+        self.driver.find_element_by_xpath("/html/body/ng-view/section/footer/ul/li[1]").click()
 
     def switch_to_view_active(self):
-        self.driver.find_element_by_xpath("/html/body/ng-view/section/footer/ul/li[1]")[2].click()
+        self.driver.find_element_by_xpath("/html/body/ng-view/section/footer/ul/li[2]").click()
 
     def switch_to_view_completed(self):
-        self.driver.find_element_by_xpath("/html/body/ng-view/section/footer/ul/li[1]")[3].click()
+        self.driver.find_element_by_xpath("/html/body/ng-view/section/footer/ul/li[3]").click()
     #
     #
     #
@@ -211,9 +240,12 @@ class TodoTests:
 
 if __name__ == '__main__':
     todo_tests = TodoTests()
-    # print("Add a new task test is: ", todo_tests.check_add_new_task("Clean my house"))
-    # print("Edit a task is: ", todo_tests.check_edit_a_task("Wake up", "Go to sleep"))
-    # print("Delete a task is: ", todo_tests.check_delete_a_task("Wake up"))
+    print("Add a new task test is: ", todo_tests.check_add_new_task("Clean my house"))
+    print("Edit a task is: ", todo_tests.check_edit_a_task("Wake up", "Go to sleep"))
+    print("Delete a task is: ", todo_tests.check_delete_a_task("Wake up"))
     print("Mark task as completed is: ", todo_tests.check_mark_task_as_completed("Wake up"))
     print("Mark completed task as active is: ", todo_tests.check_mark_completed_task_as_active("Wake up"))
     print("Clear completed tasks is: ", todo_tests.check_clear_completed_tasks("Wake up", "Clean the house"))
+    print("check_view_all is: ", todo_tests.check_view_all("Wake up", "Clean the house"))
+    print("check_view_active is: ", todo_tests.check_view_active("Wake up", "Clean the house"))
+    print("check_view_active is: ", todo_tests.check_view_completed("Wake up", "Clean the house"))
